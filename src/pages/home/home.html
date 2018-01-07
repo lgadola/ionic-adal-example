@@ -13,6 +13,12 @@
   <p>
     If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
   </p>
-
+  <h2 *ngIf="isLoggedIn" text-center>User is logged in!</h2>
+  <h2 *ngIf="!isLoggedIn" text-center>User is not logged in!</h2>
+   
+  <button full ion-button color="primary" (click)="loginUser()">Login</button>
+  <button full ion-button color="danger" (click)="logoutUser()">Logout</button>
+  <button full ion-button color="secondary" (click)="nextPage()">Next Page</button>
+  
   <button ion-button secondary menuToggle>Toggle Menu</button>
 </ion-content>

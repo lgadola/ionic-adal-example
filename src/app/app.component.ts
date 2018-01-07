@@ -6,6 +6,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
 
+import { AdalConfigService } from './_services/adal-config.service';
+import { AdalService } from 'ng2-adal/dist/core';
+
 @Component({
   templateUrl: 'app.html'
 })
@@ -16,8 +19,17 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(
+    public platform: Platform, 
+    public statusBar: StatusBar, 
+    public splashScreen: SplashScreen,
+    private adalService: AdalService,
+    private adalConfigService: AdalConfigService,
+) {
     this.initializeApp();
+
+    this.adalService.init(this.adalConfigService.adalConfig);
+    this.adalService.handleWindowCallback();
 
     // used for an example of ngFor and navigation
     this.pages = [
