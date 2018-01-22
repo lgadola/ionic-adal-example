@@ -3,18 +3,16 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import {MSAdal} from '@ionic-native/ms-adal';
+import { MSAdal} from '@ionic-native/ms-adal';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @NgModule({
   declarations: [
     MyApp,
-    HomePage,
-    ListPage
+
   ],
   imports: [
     BrowserModule,
@@ -23,14 +21,13 @@ import {MSAdal} from '@ionic-native/ms-adal';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage,
-    ListPage
-  ],
+   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    MSAdal
+    MSAdal,
+    InAppBrowser
   ]
 })
 export class AppModule {}

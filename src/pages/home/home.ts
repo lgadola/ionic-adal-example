@@ -1,31 +1,41 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { MSAdal, AuthenticationContext, AuthenticationResult } from '@ionic-native/ms-adal';
 
+/**
+ * Generated class for the HomePage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
+ */
+
+@IonicPage()
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
 })
 export class HomePage implements OnInit {
 
-  public authContext: AuthenticationContext;
+  public UserId: string;
 
-  constructor(public navCtrl: NavController, private msAdal: MSAdal) {
-    let authContext = this.msAdal.createAuthenticationContext('https://login.windows.net/79f641ca-5bdb-49ea-b795-8fea5279e716');
+  constructor(public navCtrl: NavController, public navParams: NavParams, private msAdal: MSAdal) {
   }
-
-  ngOnInit(): void {
-    this.authContext.acquireTokenAsync('https://graph.windows.net', 'd017633c-c807-4730-8c6e-f4af6f58b68d', 'http://AngularAdalConnect')
+  ngOnInit() {
+  }
+  ionViewDidLoad() {
+    console.debug('ionViewDidLoad HomePage');
+  }
+  public SignIn() {
+    let authContext: AuthenticationContext = this.msAdal.createAuthenticationContext('https://login.windows.net/79f641ca-5bdb-49ea-b795-8fea5279e716');
+    authContext.acquireTokenAsync('https://graph.windows.net',
+      '89b27a0d-e1c9-4ac4-bba5-4c8f42c029d0',
+      'http://mydirectorysearcherapp/', null, null)
       .then((authResponse: AuthenticationResult) => {
-        console.log('Token is', authResponse.accessToken);
-        console.log('Token will expire on', authResponse.expiresOn);
+        console.debug('Token is', authResponse.accessToken);
+        console.debug('Token will expire on', authResponse.expiresOn);
+        this.UserId = authResponse.userInfo.userId;
       })
       .catch((e: any) => console.log('Authentication failed', e));
-  }
-
-  public isLoggedIn(): boolean {
-    return false;
-  }
-
+      }
 }
