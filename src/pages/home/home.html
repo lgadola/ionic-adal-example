@@ -8,5 +8,22 @@
 
 
 <ion-content padding>
-  <button ion-button (click)="SignIn()">Log in</button>
+  <div *ngIf="LoginInfo | async as user; else notLoggedIn">
+    Welcome back, {{ (LoginInfo|async)?.givenName }}
+    <p>
+      Your password will expire on {{ user.passwordExpiresOn }}. Youcan change it
+      <a target="_blank" href="{{ user.passwordChangeUrl }}">here</a>.
+    </p>
+  </div>
+  <ng-template #notLoggedIn>
+      <button ion-button (click)="SignIn()">Log in</button>
+  </ng-template>
+
+  <p *ngIf="isApp">
+    This is being viewed from within the app
+  </p>
+
+  <p *ngIf="!isApp">
+    This is being viewed from a browser
+  </p>
 </ion-content>

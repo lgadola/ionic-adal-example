@@ -8,6 +8,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { MSAdal} from '@ionic-native/ms-adal';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { AuthServiceProvider } from '../providers/auth-service/auth-service';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     MSAdal,
+    AuthServiceProvider,
     InAppBrowser
   ]
 })
