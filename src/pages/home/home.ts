@@ -36,7 +36,16 @@ export class HomePage implements OnInit {
       alert("login on browser not implemented");
       return;
     }
-    this.LoginInfo = this.authService.login();
-    console.debug('Token: ' + this.authService.AccessToken);
+    this.LoginInfo = this.authService.signIn();
   }
+  public SignOut(){
+    if (!this.isApp) {
+      // todo: implement browser logout
+      alert("logout on browser not implemented");
+      return;
+    }
+    this.authService.signOut();
+    this.LoginInfo = null;
+  }
+
 }

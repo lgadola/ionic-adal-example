@@ -10,9 +10,12 @@
 <ion-content padding>
   <div *ngIf="LoginInfo | async as user; else notLoggedIn">
     Welcome back, {{ (LoginInfo|async)?.givenName }}
+    <br>
+    <button ion-button (click)="SignOut()">Log out</button>
     <p>
-      Your password will expire on {{ user.passwordExpiresOn }}. Youcan change it
+      Your password will expire on {{ user.passwordExpiresOn }}. You can change it
       <a target="_blank" href="{{ user.passwordChangeUrl }}">here</a>.
+      <br>{{ user.passwordChangeUrl }}
     </p>
   </div>
   <ng-template #notLoggedIn>
