@@ -1,7 +1,8 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Home</ion-title>
+    <img src="assets/imgs/MFOx44.png" style="display:inline-block" />
+    <ion-title class="titleicon" style="display:inline-block">Home</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -10,16 +11,19 @@
 <ion-content padding>
   <div *ngIf="LoginInfo | async as user; else notLoggedIn">
     Welcome back, {{ (LoginInfo|async)?.givenName }}
-    <br>
-    <button ion-button (click)="SignOut()">Log out</button>
     <p>
-      Your password will expire on {{ user.passwordExpiresOn }}. You can change it
-      <a target="_blank" href="{{ user.passwordChangeUrl }}">here</a>.
-      <br>{{ user.passwordChangeUrl }}
+      Your password will expire on {{ user.passwordExpiresOn }}.
     </p>
+    <div *ngIf="user.passwordChangeUrl">
+      <p>
+        You can change it
+        <a target="_blank" href="{{ user.passwordChangeUrl }}">here</a>.
+      </p>
+    </div>
+    <button ion-button (click)="SignOut()">Log out</button>
   </div>
   <ng-template #notLoggedIn>
-      <button ion-button (click)="SignIn()">Log in</button>
+    <button ion-button (click)="SignIn()">Log in</button>
   </ng-template>
 
   <p *ngIf="isApp">

@@ -1,0 +1,7 @@
+{
+  "aadAuthority": "https://login.windows.net/79f641ca-5bdb-49ea-b795-8fea5279e716",
+  "aadAppClientId":"89b27a0d-e1c9-4ac4-bba5-4c8f42c029d0",
+  "aadAppRedirect": "http://mydirectorysearcherapp/",
+  "aadGraphResource": "https://graph.windows.net",
+  "aadOdataResource": "https://mfo-odata.azurewebsites.net"
+}

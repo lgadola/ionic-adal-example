@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MSAdal, AuthenticationContext, AuthenticationResult } from '@ionic-native/ms-adal';
+import { ConfigurationService } from 'ionic-configuration-service';
 
 export interface LoginInfo {
   loggedIn: boolean;
@@ -8,6 +9,7 @@ export interface LoginInfo {
   givenName: string;
   passwordChangeUrl: string;
   passwordExpiresOn: Date;
+  token: string;
 }
 
 @Injectable()
@@ -16,15 +18,17 @@ export class AuthServiceProvider {
   public UserId: string;
   public AccessToken: string;
 
-  constructor(private msAdal: MSAdal) {
+  constructor(private msAdal: MSAdal, private configurationService: ConfigurationService) {
   }
   // Private resources
   _aadAuthContext: AuthenticationContext = null;
-  _aadAuthority: string = "https://login.windows.net/79f641ca-5bdb-49ea-b795-8fea5279e716";
-  _aadAppClientId: string = "89b27a0d-e1c9-4ac4-bba5-4c8f42c029d0";
-  _aadAppRedirect: string = "http://mydirectorysearcherapp/";
-  _graphResource: string = "https://graph.windows.net";
-  _odataResource: string = "https://mfo-odata.azurewebsites.net";
+/*
+  _aadAuthority: string = this.configurationService.getValue<string>("aadAuthority");
+  _aadAppClientId: string = this.configurationService.getValue<string>("aadAppClientId");
+  _aadAppRedirect: string = this.configurationService.getValue<string>("aadAppRedirect");
+  _graphResource: string = this.configurationService.getValue<string>("aadGraphResource");
+  _odataResource: string = this.configurationService.getValue<string>("aadOdataResource");
+ */
 
   // Private function to get authentication context using ADAL
   ensureContext() {
@@ -32,7 +36,8 @@ export class AuthServiceProvider {
       // Check if aadAuthContext is already initialized
       if (this._aadAuthContext == null) {
         // aadAuthContext is null...initialize it
-        this._aadAuthContext = this.msAdal.createAuthenticationContext(this._aadAuthority, false);
+        var authority = this.configurationService.getValue<string>("aadAuthority");
+        this._aadAuthContext = this.msAdal.createAuthenticationContext(authority, false);
         resolve(this._aadAuthContext);
       }
       else {
@@ -53,17 +58,19 @@ export class AuthServiceProvider {
           resolve({
             loggedIn: true, userId: authResponse.userInfo.userId,
             familyName: authResponse.userInfo.familyName, givenName: authResponse.userInfo.givenName,
-            passwordChangeUrl: authResponse.userInfo.passwordChangeUrl, passwordExpiresOn: authResponse.userInfo.passwordExpiresOn
+            passwordChangeUrl: authResponse.userInfo.passwordChangeUrl, passwordExpiresOn: authResponse.userInfo.passwordExpiresOn,
+            token: authResponse.accessToken
           });
         }, function (err) {
           // We failed to get the token silently...try getting it with user interaction
-          helper._aadAuthContext.acquireTokenAsync(resource, helper._aadAppClientId, helper._aadAppRedirect, null, null)
+          helper._aadAuthContext.acquireTokenAsync(resource, this.configurationService.getValue("aadAppClientId"), this.configurationService.getValue("aadAppRedirect"), null, null)
             .then(function (authResponse: AuthenticationResult) {
               // Resolve the promise with the token
               resolve({
                 loggedIn: true, userId: authResponse.userInfo.userId,
                 familyName: authResponse.userInfo.familyName, givenName: authResponse.userInfo.givenName,
-                passwordChangeUrl: authResponse.userInfo.passwordChangeUrl, passwordExpiresOn: authResponse.userInfo.passwordExpiresOn
+                passwordChangeUrl: authResponse.userInfo.passwordChangeUrl, passwordExpiresOn: authResponse.userInfo.passwordExpiresOn,
+                token: authResponse.accessToken
               });
             }, function (err) {
               // Reject the promise
@@ -76,7 +83,6 @@ export class AuthServiceProvider {
 
   // Private function to get access token for a specific resource silent using ADAL
   getTokenForResourceSilent(context, resource) {
-    var helper = this;
     return new Promise<AuthenticationResult>((resolve, reject) => {
       // read the tokenCache
       context.tokenCache.readItems().then(function (cacheItems) {
@@ -85,7 +91,7 @@ export class AuthServiceProvider {
         if (cacheItems.length > 1) {
           user_id = cacheItems[0].userInfo.userId;
         }
-        context.acquireTokenSilentAsync(resource, helper._aadAppClientId, user_id)
+        context.acquireTokenSilentAsync(resource, this.configurationService.getValue("aadAppClientId"), user_id)
           .then(function (authResult: AuthenticationResult) {
             // Resolve the authResult from the silent token call
             resolve(authResult);
@@ -106,7 +112,7 @@ export class AuthServiceProvider {
     return new Promise((resolve, reject) => {
       helper.ensureContext().then(function (context) {
         // First try to get the token silently
-        helper.getTokenForResourceSilent(context, helper._graphResource).then(function (token) {
+        helper.getTokenForResourceSilent(context, this.configurationService.getValue("aadGraphResource")).then(function (token) {
           // We were able to get the token silently...return it
           resolve(true);
         }, function (err) {
@@ -121,9 +127,10 @@ export class AuthServiceProvider {
   signIn() {
     return new Promise<LoginInfo>((resolve, reject) => {
       this.signOut(); // get rid of all cached tokens
-      this.getTokenForResource(this._graphResource)
+      this.getTokenForResource(this.configurationService.getValue<string>("aadGraphResource"))
         .then(function (response) {
           resolve(response);
+          localStorage.setItem("graph_token",response.token);
         }, function (err) {
           reject("Sign-in failed");
         });
